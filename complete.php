@@ -1,9 +1,37 @@
 <?php
   session_start();
-
+  require_once'./functions.php';
   $name = $_SESSION['name'];
-  $hobby = $_SESSION['email'];
+  $email = $_SESSION['email'];
   $gender = $_SESSION['gender'];
+  
+  $dbh = db_conn();
+
+try{ 
+
+    $sql = "INSERT INTO user (email, name, gender) VALUE (:email, :name, :gender)"; 
+
+     $stmt=$dbh->prepare($sql);
+
+    $stmt->bindValue(':email', $email, PDO::PARAM_STR); 
+
+      [名前のプレースホルダーに値をバインド];
+      $stmt->bindValue(':name', $name, PDO::PARAM_STR); 
+
+      [性別のプレースホルダーに値をバインド]; 
+      $stmt->bindValue(':gender', $gender, PDO::PARAM_STR); 
+    $stmt->execute(); 
+
+      [DB切断]; 
+      $dbh=null;
+
+}catch (PDOException $e){ 
+
+    echo($e->getMessage()); 
+
+    die(); 
+
+} 
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +52,7 @@
 </div>
 <hr>
 <p>名前は <?php echo $name;?> さん</p>
-<p>メールアドレスは <?php echo $hobby;?> </p>
+<p>メールアドレスは <?php echo $email;?> </p>
 
 <p>性別は <?php if( $gender === "1" ){ echo '男性'; }
 		elseif( $gender === "2" ){ echo '女性'; }
